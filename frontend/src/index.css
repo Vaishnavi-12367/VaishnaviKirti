@@ -2,9 +2,10 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: #0f172a;   /* dark navy */
+  background: linear-gradient(135deg, #4f46e5, #06b6d4);
 }
-#root{
+
+#root {
   display: flex;
   justify-content: center;
   align-items: center;

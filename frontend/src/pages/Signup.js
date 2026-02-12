@@ -32,7 +32,12 @@ function Signup() {
 
   return (
   <div style={cardStyle}>
-    <h2 style={{ color: "#fff", marginBottom: "20px" }}>Create Account</h2>
+    <h2 style={{ color: "#000", marginBottom: "10px" }}>
+    🚀 Create Account
+    </h2>
+    <p style={{ color: "#64748b", fontSize: "14px", marginBottom: "25px" }}>
+    Create your workspace and start building ✨
+    </p>
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
       <input name="name" placeholder="Full Name" onChange={handleChange} style={inputStyle} />
       <input name="email" placeholder="Email" onChange={handleChange} style={inputStyle} />
@@ -43,32 +48,31 @@ function Signup() {
 );
 }
 const cardStyle = {
-  background: "#1e293b",
-  padding: "40px",
-  borderRadius: "12px",
-  width: "350px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+  background: "white",
+  padding: "45px",
+  borderRadius: "16px",
+  width: "380px",
+  boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
   textAlign: "center"
 };
 
 const inputStyle = {
   padding: "12px",
-  borderRadius: "6px",
-  border: "none",
+  borderRadius: "8px",
+  border: "1px solid #cbd5e1",
   outline: "none",
-  background: "#334155",
-  color: "#fff"
+
 };
 
 const buttonStyle = {
   padding: "12px",
-  borderRadius: "6px",
+  borderRadius: "8px",
   border: "none",
-  backgroundColor: "#3b82f6",
+  background: "linear-gradient(90deg, #4f46e5, #06b6d4)",
   color: "white",
   fontWeight: "bold",
-  cursor: "pointer",
-  transition: "0.3s"
+  fontSize: "15px",
+  cursor: "pointer"
 };
 
-export default Signup;
+export default  Signup;
