@@ -31,19 +31,44 @@ function Signup() {
   };
 
   return (
-    <div>
-      <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} />
-        <br />
-        <input name="email" placeholder="Email" onChange={handleChange} />
-        <br />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} />
-        <br />
-        <button type="submit">Signup</button>
-      </form>
-    </div>
-  );
+  <div style={cardStyle}>
+    <h2 style={{ color: "#fff", marginBottom: "20px" }}>Create Account</h2>
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+      <input name="name" placeholder="Full Name" onChange={handleChange} style={inputStyle} />
+      <input name="email" placeholder="Email" onChange={handleChange} style={inputStyle} />
+      <input name="password" type="password" placeholder="Password" onChange={handleChange} style={inputStyle} />
+      <button type="submit" style={buttonStyle}>Sign Up</button>
+    </form>
+  </div>
+);
 }
+const cardStyle = {
+  background: "#1e293b",
+  padding: "40px",
+  borderRadius: "12px",
+  width: "350px",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+  textAlign: "center"
+};
+
+const inputStyle = {
+  padding: "12px",
+  borderRadius: "6px",
+  border: "none",
+  outline: "none",
+  background: "#334155",
+  color: "#fff"
+};
+
+const buttonStyle = {
+  padding: "12px",
+  borderRadius: "6px",
+  border: "none",
+  backgroundColor: "#3b82f6",
+  color: "white",
+  fontWeight: "bold",
+  cursor: "pointer",
+  transition: "0.3s"
+};
 
 export default Signup;
