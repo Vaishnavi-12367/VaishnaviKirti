@@ -26,8 +26,13 @@ function Signup() {
       alert("Signup successful");
       navigate("/login");
     } catch (err) {
-      alert("Error signing up");
-    }
+    console.log("Signup Error:", err);
+    if (err.response) {
+    console.log("Backend Response:", err.response.data);
+  }
+    alert("Error signing up");
+}
+
   };
 
   return (
