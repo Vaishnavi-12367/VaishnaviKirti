@@ -1,27 +1,3 @@
-const express = require("express");
-const router = express.Router();
-const User = require("../models/User");   // if you created User model
-
-// SIGNUP ROUTE
-router.post("/signup", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    const newUser = new User({
-      name,
-      email,
-      password
-    });
-
-    await newUser.save();
-
-    res.json({ message: "User created successfully" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-// LOGIN ROUTE
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -33,14 +9,17 @@ router.post("/login", async (req, res) => {
     }
 
     if (user.password !== password) {
-      return res.status(400).json({ message: "Invalid password" });
+      return res.status(400).json({ message: "Incorrect password" });
     }
 
-    res.json({ message: "Login successful" });
+    res.json({
+      message: "Login successful",
+      email: user.email,
+      plan: user.plan
+    });
+
   } catch (error) {
-    console.log("LOGIN ERROR:", error);
+    console.log(error);
     res.status(500).json({ message: "Server error" });
   }
 });
-
-module.exports = router;

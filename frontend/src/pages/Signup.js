@@ -1,83 +1,59 @@
+import "./Auth.css";
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-function Signup() {
-  const navigate = useNavigate();
+const Signup = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: ""
-  });
-
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-
     try {
-      await axios.post("http://localhost:5000/api/auth/signup", form);
-      alert("Signup successful");
-      navigate("/login");
+      await axios.post("http://localhost:5000/api/auth/signup", {
+        name,
+        email,
+        password
+      });
+      alert("Signup successful!");
     } catch (err) {
-    console.log("Signup Error:", err);
-    if (err.response) {
-    console.log("Backend Response:", err.response.data);
-  }
-    alert("Error signing up");
-}
-
+      alert("Signup failed");
+    }
   };
 
+  // 👇 ADD RETURN HERE
   return (
-  <div style={cardStyle}>
-    <h2 style={{ color: "#000", marginBottom: "10px" }}>
-    🚀 Create Account
-    </h2>
-    <p style={{ color: "#64748b", fontSize: "14px", marginBottom: "25px" }}>
-    Create your workspace and start building ✨
-    </p>
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-      <input name="name" placeholder="Full Name" onChange={handleChange} style={inputStyle} />
-      <input name="email" placeholder="Email" onChange={handleChange} style={inputStyle} />
-      <input name="password" type="password" placeholder="Password" onChange={handleChange} style={inputStyle} />
-      <button type="submit" style={buttonStyle}>Sign Up</button>
-    </form>
-  </div>
-);
-}
-const cardStyle = {
-  background: "white",
-  padding: "45px",
-  borderRadius: "16px",
-  width: "380px",
-  boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
-  textAlign: "center"
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Create Account</h2>
+        <p style={{
+  fontSize: "14px",
+  color: "#64748b",
+  marginBottom: "20px",
+  lineHeight: "1.5"
+}}>
+ Manage your subscriptions with ease.
+</p>
+
+        <form onSubmit={handleSignup}>
+          <input type="text" placeholder="Full Name" onChange={(e) => setName(e.target.value)} />
+          <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+          <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+          <button type="submit">Sign Up</button>
+        </form>
+        <p style={{ marginTop: "15px", fontSize: "14px" }}>
+  Already have an account?{" "}
+  <span
+    style={{ color: "#2563eb", cursor: "pointer", fontWeight: "bold" }}
+    onClick={() => (window.location.href = "/login")}
+  >
+    Login
+  </span>
+</p>
+
+      </div>
+    </div>
+  );
 };
 
-const inputStyle = {
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #cbd5e1",
-  outline: "none",
-
-};
-
-const buttonStyle = {
-  padding: "12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "linear-gradient(90deg, #4f46e5, #06b6d4)",
-  color: "white",
-  fontWeight: "bold",
-  fontSize: "15px",
-  cursor: "pointer"
-};
-
-export default  Signup;
+export default Signup;

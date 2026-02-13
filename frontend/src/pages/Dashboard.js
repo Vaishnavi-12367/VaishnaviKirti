@@ -1,63 +1,95 @@
-import { useState } from "react";
-
 function Dashboard() {
+  const userEmail = localStorage.getItem("userEmail");
+
   return (
-    <div style={containerStyle}>
-      <div style={sidebarStyle}>
-        <h2 style={{ color: "white" }}>🚀 SaaSify</h2>
-        <p style={menuItem}>🏠 Dashboard</p>
-        <p style={menuItem}>📝 Notes</p>
-        <p style={menuItem}>💳 Subscription</p>
-        <p style={menuItem}>📊 Analytics</p>
+    <div style={{ display: "flex", height: "100vh" }}>
+
+      {/* Sidebar */}
+      <div style={{
+        width: "220px",
+        background: "#0f172a",
+        color: "white",
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px"
+      }}>
+        <h2 style={{ marginBottom: "30px" }}>🚀 SaaSify</h2>
+
+        <p style={{ cursor: "pointer" }}>🏠 Home</p>
+        <p
+  style={{ cursor: "pointer" }}
+  onClick={() => (window.location.href = "/subscription")}
+>
+  💳 Subscription
+</p>
+
+        <p style={{ cursor: "pointer" }}>📊 Analytics</p>
+        <p style={{ cursor: "pointer" }}>⚙ Settings</p>
+
+        <div style={{ marginTop: "auto" }}>
+          <button
+            onClick={() => {
+              localStorage.clear();
+              window.location.href = "/login";
+            }}
+            style={{
+              padding: "8px",
+              width: "100%",
+              background: "#ef4444",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
-      <div style={mainStyle}>
-        <div style={headerStyle}>
-          <h3>Welcome Back 👋</h3>
-        </div>
+      {/* Main Content */}
+      <div style={{
+        flex: 1,
+        background: "#111827",
+        color: "white",
+        padding: "40px"
+      }}>
+        <h1>Welcome back 👋</h1>
+        <p style={{ color: "#9ca3af" }}>{userEmail}</p>
 
-        <div style={contentStyle}>
-          <h2>Your Workspace</h2>
-          <p>This is where your SaaS content will appear.</p>
+        <div style={{
+          marginTop: "40px",
+          display: "flex",
+          gap: "20px"
+        }}>
+          <div style={cardStyle}>
+            <h3>Current Plan</h3>
+            <p>Free</p>
+          </div>
+
+          <div style={cardStyle}>
+            <h3>Total Projects</h3>
+            <p>0</p>
+          </div>
+
+          <div style={cardStyle}>
+            <h3>Usage</h3>
+            <p>0%</p>
+          </div>
         </div>
       </div>
+
     </div>
   );
 }
-const containerStyle = {
-  display: "flex",
-  height: "100vh",
-  width: "100%"
-};
 
-const sidebarStyle = {
-  width: "220px",
-  background: "#1e293b",
+const cardStyle = {
+  background: "#1f2937",
   padding: "20px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "20px"
+  borderRadius: "12px",
+  width: "200px",
+  boxShadow: "0 10px 20px rgba(0,0,0,0.3)"
 };
 
-const menuItem = {
-  color: "#cbd5e1",
-  cursor: "pointer"
-};
-
-const mainStyle = {
-  flex: 1,
-  background: "#f1f5f9",
-  display: "flex",
-  flexDirection: "column"
-};
-
-const headerStyle = {
-  background: "white",
-  padding: "20px",
-  boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
-};
-
-const contentStyle = {
-  padding: "30px"
-};
 export default Dashboard;
