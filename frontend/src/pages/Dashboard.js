@@ -1,5 +1,9 @@
+import { useNavigate } from "react-router-dom";
+
 function Dashboard() {
   const userEmail = localStorage.getItem("userEmail");
+  const navigate = useNavigate();
+
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -19,12 +23,26 @@ function Dashboard() {
         <p style={{ cursor: "pointer" }}>🏠 Home</p>
         <p
   style={{ cursor: "pointer" }}
-  onClick={() => (window.location.href = "/subscription")}
+  onClick={() => navigate("/subscription")}
 >
   💳 Subscription
 </p>
 
-        <p style={{ cursor: "pointer" }}>📊 Analytics</p>
+
+<p
+  style={{ cursor: "pointer" }}
+  onClick={() => navigate("/billing")}
+>
+  💰 Billing
+</p>
+<p
+  style={{ cursor: "pointer" }}
+  onClick={() => navigate("/analytics")}
+>
+  📊 Analytics
+</p>
+
+
         <p style={{ cursor: "pointer" }}>⚙ Settings</p>
 
         <div style={{ marginTop: "auto" }}>
