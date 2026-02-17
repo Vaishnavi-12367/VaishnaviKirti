@@ -5,6 +5,10 @@ import Dashboard from "./pages/Dashboard";
 import Subscription from "./pages/Subscription";
 import Billing from "./pages/Billing";
 import Analytics from "./pages/Analytics";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Notes from "./pages/Notes";
+
+
 
 function App() {
   return (
@@ -12,10 +16,50 @@ function App() {
       <Routes>
         <Route path="/" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/subscription" element={<Subscription />} />
-        <Route path="/billing" element={<Billing />} />
-        <Route path="/analytics" element={<Analytics />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+  }
+/>
+
+       <Route
+  path="/subscription"
+  element={
+    <ProtectedRoute>
+      <Subscription />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/billing"
+  element={
+    <ProtectedRoute>
+      <Billing />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/analytics"
+  element={
+    <ProtectedRoute>
+      <Analytics />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/notes"
+  element={
+    <ProtectedRoute>
+      <Notes />
+    </ProtectedRoute>
+  }
+/>
 
       </Routes>
     </BrowserRouter>

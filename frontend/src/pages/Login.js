@@ -1,8 +1,7 @@
-import { useEffect } from "react";
-import "./Auth.css";
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Auth.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -10,12 +9,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-  const loggedIn = localStorage.getItem("isLoggedIn");
-  if (loggedIn) {
-    navigate("/dashboard");
-  }
-}, []);
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -25,16 +18,19 @@ function Login() {
         { email, password }
       );
 
-      // store user info
+      // Save user data
       localStorage.setItem("userEmail", res.data.email);
       localStorage.setItem("userPlan", res.data.plan);
+      localStorage.setItem("userRole", res.data.role);
+      localStorage.setItem("tenantId", res.data.tenantId);
+      localStorage.setItem("billingCycle", res.data.billingCycle);
       localStorage.setItem("isLoggedIn", "true");
 
       alert("Login successful!");
-
       navigate("/dashboard");
 
     } catch (err) {
+      console.log("LOGIN ERROR:", err.response?.data);
       alert("Login failed");
     }
   };

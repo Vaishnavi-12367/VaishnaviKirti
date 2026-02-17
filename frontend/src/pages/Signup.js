@@ -1,8 +1,13 @@
+
+
 import "./Auth.css";
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +21,7 @@ const Signup = () => {
         password
       });
       alert("Signup successful!");
+      navigate("/login");  
     } catch (err) {
       alert("Signup failed");
     }

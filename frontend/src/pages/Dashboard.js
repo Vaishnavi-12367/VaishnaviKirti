@@ -1,9 +1,30 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
-  const userEmail = localStorage.getItem("userEmail");
   const navigate = useNavigate();
 
+  const tenantId = localStorage.getItem("tenantId");
+  const userEmail = localStorage.getItem("userEmail");
+  const plan = localStorage.getItem("userPlan") || "Free";
+
+  const [noteCount, setNoteCount] = useState(0);
+
+  // Fetch notes count
+  useEffect(() => {
+    if (!tenantId) return;
+
+    fetch(`http://localhost:5000/api/notes/${tenantId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setNoteCount(data.length);
+        } else {
+          setNoteCount(0);
+        }
+      })
+      .catch(() => setNoteCount(0));
+  }, [tenantId]);
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -21,29 +42,22 @@ function Dashboard() {
         <h2 style={{ marginBottom: "30px" }}>🚀 SaaSify</h2>
 
         <p style={{ cursor: "pointer" }}>🏠 Home</p>
-        <p
-  style={{ cursor: "pointer" }}
-  onClick={() => navigate("/subscription")}
->
-  💳 Subscription
-</p>
 
+        <p style={{ cursor: "pointer" }} onClick={() => navigate("/notes")}>
+          📝 Notes
+        </p>
 
-<p
-  style={{ cursor: "pointer" }}
-  onClick={() => navigate("/billing")}
->
-  💰 Billing
-</p>
-<p
-  style={{ cursor: "pointer" }}
-  onClick={() => navigate("/analytics")}
->
-  📊 Analytics
-</p>
+        <p style={{ cursor: "pointer" }} onClick={() => navigate("/subscription")}>
+          💳 Subscription
+        </p>
 
+        <p style={{ cursor: "pointer" }} onClick={() => navigate("/billing")}>
+          💰 Billing
+        </p>
 
-        <p style={{ cursor: "pointer" }}>⚙ Settings</p>
+        <p style={{ cursor: "pointer" }} onClick={() => navigate("/analytics")}>
+          📊 Analytics
+        </p>
 
         <div style={{ marginTop: "auto" }}>
           <button
@@ -83,18 +97,22 @@ function Dashboard() {
         }}>
           <div style={cardStyle}>
             <h3>Current Plan</h3>
-            <p>Free</p>
+            <p>{plan}</p>
           </div>
 
           <div style={cardStyle}>
-            <h3>Total Projects</h3>
-            <p>0</p>
+            <h3>Total Notes</h3>
+            <p>{noteCount}</p>
           </div>
 
           <div style={cardStyle}>
-            <h3>Usage</h3>
-            <p>0%</p>
-          </div>
+  <h3>Usage</h3>
+  <p>
+    {plan === "Free"
+      ? `${(noteCount / 3) * 100}%`
+      : "Unlimited"}
+  </p>
+</div>
         </div>
       </div>
 
