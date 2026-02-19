@@ -14,9 +14,9 @@ function Notes() {
   // FETCH NOTES
   // ==============================
   const fetchNotes = () => {
-    if (!tenantId) return;
+    if (!token) return;
 
-    fetch(`http://localhost:5000/api/notes/${tenantId}`, {
+    fetch("http://localhost:5000/api/notes", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -175,76 +175,103 @@ function Notes() {
 const containerStyle = {
   padding: "40px",
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #1e293b, #2d1b69)",
-  color: "white"
+  background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)",
+  color: "white",
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
 };
 
 const formCardStyle = {
-  background: "#1f2937",
-  padding: "30px",
-  borderRadius: "16px",
+  background: "linear-gradient(145deg, #1e293b, #334155)",
+  padding: "35px",
+  borderRadius: "20px",
   display: "flex",
   flexDirection: "column",
-  gap: "18px",
+  gap: "20px",
   maxWidth: "800px",
-  boxShadow: "0 15px 40px rgba(0,0,0,0.35)"
+  boxShadow: "0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  backdropFilter: "blur(10px)"
 };
 
 const inputStyle = {
-  padding: "12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#111827",
-  color: "white"
+  padding: "16px 20px",
+  borderRadius: "12px",
+  border: "2px solid transparent",
+  background: "linear-gradient(145deg, #0f172a, #1e293b)",
+  color: "white",
+  fontSize: "16px",
+  transition: "all 0.3s ease",
+  outline: "none",
+  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.3)"
 };
 
 const textareaStyle = {
-  padding: "12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#111827",
+  padding: "16px 20px",
+  borderRadius: "12px",
+  border: "2px solid transparent",
+  background: "linear-gradient(145deg, #0f172a, #1e293b)",
   color: "white",
-  minHeight: "120px",
-  resize: "none"
+  fontSize: "16px",
+  minHeight: "150px",
+  resize: "vertical",
+  transition: "all 0.3s ease",
+  outline: "none",
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.3)"
 };
 
 const btnStyle = {
-  padding: "12px",
-  borderRadius: "10px",
+  padding: "16px 32px",
+  borderRadius: "14px",
   border: "none",
-  background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
   color: "white",
-  fontWeight: "600",
-  cursor: "pointer"
+  fontWeight: "700",
+  fontSize: "16px",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+  boxShadow: "0 4px 20px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
+  textTransform: "uppercase",
+  letterSpacing: "1px"
 };
 
 const noteCardStyle = {
-  background: "#1f2937",
-  padding: "25px",
-  borderRadius: "14px",
-  marginBottom: "20px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+  background: "linear-gradient(145deg, #1e293b, #334155)",
+  padding: "30px",
+  borderRadius: "20px",
+  marginBottom: "25px",
+  boxShadow: "0 15px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  transition: "all 0.3s ease",
+  position: "relative",
+  overflow: "hidden"
 };
 
 const editBtn = {
-  marginTop: "10px",
-  marginRight: "10px",
-  padding: "8px 12px",
-  background: "#3b82f6",
+  marginTop: "15px",
+  marginRight: "12px",
+  padding: "10px 20px",
+  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
   border: "none",
-  borderRadius: "6px",
+  borderRadius: "10px",
   color: "white",
-  cursor: "pointer"
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+  boxShadow: "0 4px 15px rgba(59, 130, 246, 0.3)"
 };
 
 const deleteBtn = {
-  marginTop: "10px",
-  padding: "8px 12px",
-  background: "#ef4444",
+  marginTop: "15px",
+  padding: "10px 20px",
+  background: "linear-gradient(135deg, #ef4444, #dc2626)",
   border: "none",
-  borderRadius: "6px",
+  borderRadius: "10px",
   color: "white",
-  cursor: "pointer"
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "all 0.3s ease",
+  boxShadow: "0 4px 15px rgba(239, 68, 68, 0.3)"
 };
 
 export default Notes;

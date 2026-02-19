@@ -1,5 +1,3 @@
-
-
 import "./Auth.css";
 import { useState } from "react";
 import axios from "axios";
@@ -15,7 +13,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/signup", {
+      const response = await axios.post("http://localhost:5000/api/auth/signup", {
         name,
         email,
         password
@@ -23,23 +21,19 @@ const Signup = () => {
       alert("Signup successful!");
       navigate("/login");  
     } catch (err) {
-      alert("Signup failed");
+      console.error("Signup error:", err);
+      const errorMessage = err.response?.data?.message || "Signup failed";
+      alert(errorMessage);
     }
   };
 
-  // 👇 ADD RETURN HERE
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2>Create Account</h2>
-        <p style={{
-  fontSize: "14px",
-  color: "#64748b",
-  marginBottom: "20px",
-  lineHeight: "1.5"
-}}>
- Manage your subscriptions with ease.
-</p>
+        <p className="auth-subtitle">
+          Manage your subscriptions with ease.
+        </p>
 
         <form onSubmit={handleSignup}>
           <input type="text" placeholder="Full Name" onChange={(e) => setName(e.target.value)} />
@@ -47,15 +41,12 @@ const Signup = () => {
           <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
           <button type="submit">Sign Up</button>
         </form>
-        <p style={{ marginTop: "15px", fontSize: "14px" }}>
-  Already have an account?{" "}
-  <span
-    style={{ color: "#2563eb", cursor: "pointer", fontWeight: "bold" }}
-    onClick={() => (window.location.href = "/login")}
-  >
-    Login
-  </span>
-</p>
+        <p className="auth-link">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")}>
+            Login
+          </span>
+        </p>
 
       </div>
     </div>
