@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -19,7 +20,8 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Signup />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 
         <Route
@@ -107,13 +109,13 @@ function App() {
         />
 
         <Route
-  path="/activity"
-  element={
-    <ProtectedRoute>
-      <Activity />
-    </ProtectedRoute>
-  }
-/>
+          path="/activity"
+          element={
+            <ProtectedRoute>
+              <Activity />
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
     </BrowserRouter>
