@@ -21,9 +21,11 @@ app.get("/", (req, res) => {
   res.send("SaaS Backend Running 🚀");
 });
 
-// ✅ Future Routes (we’ll create these next)
+// ✅ Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/notes", require("./routes/noteRoutes"));
+app.use("/api/analytics", require("./routes/analyticsRoutes"));
+app.use("/api/subscription", require("./routes/subscriptionRoutes"));
 
 const PORT = process.env.PORT || 5000;
 
