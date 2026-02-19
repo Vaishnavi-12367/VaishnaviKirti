@@ -19,11 +19,13 @@ function Login() {
       );
 
       // Save user data
+      localStorage.setItem("token", res.data.token);
       localStorage.setItem("userEmail", res.data.email);
       localStorage.setItem("userPlan", res.data.plan);
       localStorage.setItem("userRole", res.data.role);
       localStorage.setItem("tenantId", res.data.tenantId);
       localStorage.setItem("billingCycle", res.data.billingCycle);
+      
       localStorage.setItem("isLoggedIn", "true");
 
       alert("Login successful!");

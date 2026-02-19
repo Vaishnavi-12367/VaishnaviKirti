@@ -1,19 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const Note = require("../models/Note");
+const verifyToken = require("../middleware/authMiddleware");
+const Activity = require("../models/Activity");
 
-// Create Note
-router.post("/create", async (req, res) => {
+
+// CREATE
+router.post("/create", verifyToken, async (req, res) => {
   try {
-    const { tenantId, title, content } = req.body;
+    const { title, content } = req.body;   // ❌ removed tenantId from here
+    const tenantId = req.user.tenantId;    // ✅ only declared once
 
     const user = await User.findOne({ tenantId });
 
-    const notesCount = await Note.countDocuments({ tenantId });
+    const existingNotes = await Note.find({ tenantId });
 
-    // FREE plan limit = 3 notes
-    if (user.plan === "Free" && notesCount >= 3) {
-      return res.status(400).json({
+    if (user.plan === "Free" && existingNotes.length >= 3) {
+      return res.status(403).json({
         message: "Free plan allows only 3 notes"
       });
     }
@@ -26,6 +29,13 @@ router.post("/create", async (req, res) => {
 
     await newNote.save();
 
+    await Activity.create({
+  tenantId,
+  userEmail: req.user.email,
+  action: "Created a note"
+});
+
+
     res.json({ message: "Note created" });
 
   } catch (err) {
@@ -35,25 +45,53 @@ router.post("/create", async (req, res) => {
 
 
 
-// Get Notes
-router.get("/:tenantId", async (req, res) => {
+// GET NOTES
+router.get("/", verifyToken, async (req, res) => {
   try {
-    const notes = await Note.find({ tenantId: req.params.tenantId });
+    const notes = await Note.find({
+      tenantId: req.user.tenantId
+    });
+
     res.json(notes);
   } catch (err) {
     res.status(500).json({ message: "Error fetching notes" });
   }
 });
 
-router.delete("/delete/:id", async (req, res) => {
+
+// DELETE
+router.delete("/delete/:id",verifyToken,   async (req, res) => {
   try {
     await Note.findByIdAndDelete(req.params.id);
-    res.json({ message: "Note deleted" });
+
+    await Activity.create({
+  tenantId: req.user.tenantId,
+  userEmail: req.user.email,
+  action: "Deleted a note"
+});
+
+    res.json({ message: "Deleted" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting note" });
+    res.status(500).json({ message: "Error deleting" });
+  }
+});
+
+// UPDATE
+router.put("/update/:id", verifyToken, async (req, res) => {
+  try {
+    const { title, content } = req.body;
+
+    await Note.findByIdAndUpdate(
+      req.params.id,
+      { title, content }
+    );
+
+    res.json({ message: "Note updated" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Error updating note" });
   }
 });
 
 
 module.exports = router;
-
