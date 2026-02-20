@@ -1,0 +1,213 @@
+/* ============================================
+   Activity Page Styles - Modern UI
+   ============================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.activity-wrapper {
+  min-height: 100vh;
+  padding: 40px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Header */
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.activity-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activity-title {
+  font-size: 32px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.activity-title-icon {
+  color: #6366f1;
+}
+
+.activity-subtitle {
+  font-size: 16px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.activity-header-right {
+  display: flex;
+  gap: 12px;
+}
+
+.activity-filter-select {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.activity-filter-select:hover {
+  border-color: #6366f1;
+}
+
+/* Stats */
+.activity-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.activity-stat-card {
+  background: linear-gradient(145deg, #1e293b, #334155);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.activity-stat-label {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.activity-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+/* Activity List */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(145deg, #1e293b, #334155);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.activity-item:hover {
+  transform: translateX(5px);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.activity-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.activity-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activity-user {
+  font-weight: 600;
+  color: #f8fafc;
+  font-size: 15px;
+}
+
+.activity-action {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.activity-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.activity-time-detail {
+  font-size: 12px;
+  color: #475569;
+}
+
+/* Empty State */
+.activity-empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(145deg, #1e293b, #334155);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.activity-empty-icon {
+  font-size: 48px;
+  color: #475569;
+  margin-bottom: 16px;
+}
+
+.activity-empty p {
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .activity-wrapper {
+    padding: 24px;
+  }
+  
+  .activity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .activity-title {
+    font-size: 26px;
+  }
+  
+  .activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .activity-time {
+    align-items: flex-start;
+  }
+}
