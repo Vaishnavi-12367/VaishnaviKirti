@@ -5,6 +5,7 @@ function Subscription() {
   const email = localStorage.getItem("userEmail");
   const plan = localStorage.getItem("userPlan") || "Free";
   const billingCycle = localStorage.getItem("billingCycle") || "Monthly";
+  const token = localStorage.getItem("token");
  
   const [selectedCycle, setSelectedCycle] = useState(billingCycle);
 
@@ -72,15 +73,22 @@ function Subscription() {
 
   const handleUpgrade = async (planName) => {
     try {
-      await fetch("http://localhost:5000/api/auth/upgrade", {
+      const res = await fetch("http://localhost:5000/api/auth/upgrade", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({ email, plan: planName })
       });
 
-      localStorage.setItem("userPlan", planName);
-      alert(`Upgraded to ${planName} plan! 🚀`);
-      window.location.reload();
+      if (res.ok) {
+        localStorage.setItem("userPlan", planName);
+        alert(`Upgraded to ${planName} plan! 🚀`);
+        window.location.reload();
+      } else {
+        alert("Upgrade failed. Please try again.");
+      }
     } catch (err) {
       alert("Upgrade failed. Please try again.");
     }
@@ -92,12 +100,10 @@ function Subscription() {
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
       <div style={headerSection}>
         <h1 style={title}>Choose Your Plan</h1>
         <p style={subtitle}>Select the perfect plan for your team's needs</p>
         
-        {/* Billing Toggle */}
         <div style={toggleContainer}>
           <button 
             style={selectedCycle === "Monthly" ? toggleBtnActive : toggleBtn}
@@ -115,13 +121,11 @@ function Subscription() {
         </div>
       </div>
 
-      {/* Current Plan Banner */}
       <div style={currentPlanBanner}>
         <span>Current Plan: </span>
         <span style={currentPlanName}>{plan}</span>
       </div>
 
-      {/* Plans Grid */}
       <div style={plansGrid}>
         {plans.map((planObj) => (
           <div 
@@ -186,7 +190,6 @@ function Subscription() {
         ))}
       </div>
 
-      {/* FAQ Section */}
       <div style={faqSection}>
         <h2 style={faqTitle}>Frequently Asked Questions</h2>
         <div style={faqGrid}>
@@ -207,8 +210,6 @@ function Subscription() {
     </div>
   );
 }
-
-/* ================= STYLES ================= */
 
 const containerStyle = {
   minHeight: "100vh",

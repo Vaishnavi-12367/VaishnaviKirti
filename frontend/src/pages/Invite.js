@@ -2,29 +2,46 @@ import { useState } from "react";
 
 function Invite() {
   const tenantId = localStorage.getItem("tenantId");
+  const token = localStorage.getItem("token");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const inviteMember = async () => {
-    await fetch("http://localhost:5000/api/auth/invite", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-        tenantId,
-        role: localStorage.getItem("userRole")
-      })
-    });
+    if (!name || !email || !password) {
+      alert("Please fill in all fields");
+      return;
+    }
 
-    alert("Member invited 🎉");
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/invite", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          tenantId,
+          role: "Member"
+        })
+      });
 
-    setName("");
-    setEmail("");
-    setPassword("");
+      if (res.ok) {
+        alert("Member invited successfully! 🎉");
+        setName("");
+        setEmail("");
+        setPassword("");
+      } else {
+        const data = await res.json();
+        alert(data.message || "Failed to invite member");
+      }
+    } catch (err) {
+      alert("Failed to invite member");
+    }
   };
 
   return (
@@ -64,8 +81,6 @@ function Invite() {
     </div>
   );
 }
-
-/* -------- STYLES -------- */
 
 const pageStyle = {
   minHeight: "100vh",

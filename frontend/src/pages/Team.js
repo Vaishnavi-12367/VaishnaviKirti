@@ -3,13 +3,16 @@ import { useEffect, useState } from "react";
 function Team() {
   const tenantId = localStorage.getItem("tenantId");
   const role = localStorage.getItem("userRole");
+  const token = localStorage.getItem("token");
 
   const [members, setMembers] = useState([]);
 
   useEffect(() => {
-    if (!tenantId || role !== "Admin") return;
+    if (!tenantId || role !== "Admin" || !token) return;
 
-    fetch(`http://localhost:5000/api/auth/team/${tenantId}`)
+    fetch(`http://localhost:5000/api/auth/team/${tenantId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -19,7 +22,28 @@ function Team() {
         }
       })
       .catch(() => setMembers([]));
-  }, [tenantId, role]);
+  }, [tenantId, role, token]);
+
+  const handleRemoveMember = async (memberId) => {
+    if (!window.confirm("Are you sure you want to remove this member?")) return;
+    
+    try {
+      await fetch(`http://localhost:5000/api/auth/remove-member/${memberId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Refresh members list
+      fetch(`http://localhost:5000/api/auth/team/${tenantId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) setMembers(data);
+        });
+    } catch (err) {
+      alert("Failed to remove member");
+    }
+  };
 
   if (role !== "Admin") {
     return (
@@ -70,13 +94,7 @@ function Team() {
 
               {member.role === "Member" && (
                 <button
-                  onClick={async () => {
-                    await fetch(
-                      `http://localhost:5000/api/auth/remove-member/${member._id}`,
-                      { method: "DELETE" }
-                    );
-                    window.location.reload();
-                  }}
+                  onClick={() => handleRemoveMember(member._id)}
                   style={removeBtnStyle}
                 >
                   Remove Member
@@ -89,8 +107,6 @@ function Team() {
     </div>
   );
 }
-
-/* ================= STYLES ================= */
 
 const pageStyle = {
   minHeight: "100vh",

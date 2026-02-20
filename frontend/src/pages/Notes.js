@@ -1,278 +1,310 @@
 import { useEffect, useState } from "react";
+import { FaStickyNote, FaPlus, FaEdit, FaTrash, FaTimes, FaCheck, FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import "./Notes.css";
 
 function Notes() {
-  const tenantId = localStorage.getItem("tenantId");
-  const token = localStorage.getItem("token");
-  const plan = localStorage.getItem("userPlan") || "Free";
-
+  const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // ==============================
-  // FETCH NOTES
-  // ==============================
-  const fetchNotes = () => {
-    if (!token) return;
+  // Debug: Log token info
+  const token = localStorage.getItem("token");
+  const tenantId = localStorage.getItem("tenantId");
+  const userEmail = localStorage.getItem("userEmail");
+  const plan = localStorage.getItem("userPlan") || "Free";
 
-    fetch("http://localhost:5000/api/notes", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setNotes(data);
-        } else {
-          setNotes([]);
-        }
-      })
-      .catch(() => setNotes([]));
-  };
+  console.log("=== Notes Page Debug ===");
+  console.log("Token exists:", !!token);
+  console.log("Token value:", token ? token.substring(0, 20) + "..." : "null");
+  console.log("TenantId:", tenantId);
+  console.log("UserEmail:", userEmail);
 
+  // Fetch notes on mount
   useEffect(() => {
-    fetchNotes();
-  }, [tenantId]);
-
-  // ==============================
-  // CREATE NOTE
-  // ==============================
-  const createNote = async () => {
-    if (plan === "Free" && notes.length >= 3) {
-      alert("Free plan allows only 3 notes. Upgrade to Pro 🚀");
+    if (!token) {
+      console.log("No token found, cannot fetch notes");
+      setLoading(false);
       return;
     }
 
-    await fetch("http://localhost:5000/api/notes/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        tenantId,
-        title,
-        content
-      })
-    });
+    const authHeader = `Bearer ${token}`;
+    console.log("Fetching notes with header:", authHeader.substring(0, 30) + "...");
 
-    setTitle("");
-    setContent("");
-    fetchNotes();
-  };
-
-  // ==============================
-  // DELETE NOTE
-  // ==============================
-  const deleteNote = async (id) => {
-    await fetch(`http://localhost:5000/api/notes/delete/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
+    fetch("http://localhost:5000/api/notes", {
+      headers: { 
+        Authorization: authHeader
       }
-    });
+    })
+    .then(res => {
+      console.log("Notes fetch response status:", res.status);
+      return res.json();
+    })
+    .then(data => {
+      console.log("Notes fetch response data:", data);
+      if (Array.isArray(data)) {
+        setNotes(data);
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching notes:", err);
+    })
+    .finally(() => setLoading(false));
+  }, [token, tenantId]);
 
-    fetchNotes();
+  // Create Note
+  const createNote = async () => {
+    if (!title.trim() || !content.trim()) {
+      setError("Please enter both title and content");
+      return;
+    }
+
+    if (plan === "Free" && notes.length >= 3) {
+      setError("Free plan allows only 3 notes. Upgrade to Pro!");
+      return;
+    }
+
+    const authHeader = `Bearer ${token}`;
+    console.log("Creating note with header:", authHeader.substring(0, 30) + "...");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/notes/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authHeader
+        },
+        body: JSON.stringify({ title: title.trim(), content: content.trim() })
+      });
+
+      console.log("Create note response status:", res.status);
+      const data = await res.json();
+      console.log("Create note response:", data);
+
+      if (!res.ok) {
+        setError(data.message || "Failed to create note");
+        return;
+      }
+
+      setTitle("");
+      setContent("");
+      setError("");
+      // Refresh notes
+      fetch("http://localhost:5000/api/notes", {
+        headers: { Authorization: authHeader }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setNotes(data);
+      });
+    } catch (err) {
+      console.error("Error creating note:", err);
+      setError("Failed to create note");
+    }
   };
 
-  // ==============================
-  // UPDATE NOTE
-  // ==============================
-  const updateNote = async (id) => {
-    await fetch(`http://localhost:5000/api/notes/update/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ title, content })
-    });
+  // Delete Note
+  const deleteNote = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this note?")) return;
 
+    try {
+      await fetch(`http://localhost:5000/api/notes/delete/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Refresh notes
+      fetch("http://localhost:5000/api/notes", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setNotes(data);
+      });
+    } catch (err) {
+      console.error("Error deleting note:", err);
+      setError("Failed to delete note");
+    }
+  };
+
+  // Update Note
+  const updateNote = async (id) => {
+    if (!title.trim() || !content.trim()) {
+      setError("Please enter both title and content");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/notes/update/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: title.trim(), content: content.trim() })
+      });
+
+      if (!res.ok) throw new Error("Failed to update note");
+
+      setEditingId(null);
+      setTitle("");
+      setContent("");
+      setError("");
+      // Refresh notes
+      fetch("http://localhost:5000/api/notes", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setNotes(data);
+      });
+    } catch (err) {
+      console.error("Error updating note:", err);
+      setError("Failed to update note");
+    }
+  };
+
+  const startEditing = (note) => {
+    setEditingId(note._id);
+    setTitle(note.title);
+    setContent(note.content);
+  };
+
+  const cancelEditing = () => {
     setEditingId(null);
     setTitle("");
     setContent("");
-    fetchNotes();
+    setError("");
   };
 
-  return (
-    <div style={containerStyle}>
-      <h1 style={{ marginBottom: "30px" }}>📝 My Notes</h1>
+  const showUpgradePrompt = plan === "Free" && notes.length >= 3;
 
-      <div style={formCardStyle}>
+  return (
+    <div className="notes-wrapper">
+      <div className="notes-header">
+        <h1 className="notes-title">
+          <FaStickyNote className="notes-title-icon" />
+          My Notes
+        </h1>
+        <p className="notes-subtitle">Capture and organize your thoughts</p>
+        {!showUpgradePrompt && plan === "Free" && (
+          <span className="notes-limit-badge">{notes.length}/3 notes (Free plan)</span>
+        )}
+      </div>
+
+      {error && (
+        <div className="notes-error">
+          <span>{error}</span>
+          <button onClick={() => setError("")} className="notes-error-close">
+            <FaTimes />
+          </button>
+        </div>
+      )}
+
+      {showUpgradePrompt && (
+        <div className="notes-upgrade-prompt">
+          <div className="notes-upgrade-icon">
+            <FaLock />
+          </div>
+          <h2>Note Limit Reached</h2>
+          <p>You've reached the maximum of 3 notes on the Free plan. Upgrade to Pro to create unlimited notes!</p>
+          <button 
+            className="notes-upgrade-btn"
+            onClick={() => navigate("/subscription")}
+          >
+            Upgrade to Pro <FaPlus />
+          </button>
+        </div>
+      )}
+
+      <div className="notes-form-card">
         <input
+          type="text"
           placeholder="Note Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={inputStyle}
+          className="notes-input"
         />
 
         <textarea
           placeholder="Write your note..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          style={textareaStyle}
+          className="notes-textarea"
         />
 
-        <button onClick={createNote} style={btnStyle}>
-          + Add Note
-        </button>
-      </div>
-
-      <div style={{ marginTop: "40px" }}>
-        {notes.map((note) => (
-          <div key={note._id} style={noteCardStyle}>
-            {editingId === note._id ? (
-              <>
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  style={inputStyle}
-                />
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  style={textareaStyle}
-                />
-                <button onClick={() => updateNote(note._id)} style={btnStyle}>
-                  Save
-                </button>
-              </>
-            ) : (
-              <>
-                <h3>{note.title}</h3>
-                <p style={{ color: "#9ca3af" }}>{note.content}</p>
-
-                <button
-                  onClick={() => {
-                    setEditingId(note._id);
-                    setTitle(note.title);
-                    setContent(note.content);
-                  }}
-                  style={editBtn}
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => deleteNote(note._id)}
-                  style={deleteBtn}
-                >
-                  Delete
-                </button>
-              </>
-            )}
+        {editingId ? (
+          <div className="notes-form-actions">
+            <button onClick={() => updateNote(editingId)} className="notes-save-btn">
+              <FaCheck /> Save Changes
+            </button>
+            <button onClick={cancelEditing} className="notes-cancel-btn">
+              <FaTimes /> Cancel
+            </button>
           </div>
-        ))}
+        ) : (
+          <button onClick={createNote} className="notes-add-btn">
+            <FaPlus /> Add Note
+          </button>
+        )}
       </div>
+
+      {loading ? (
+        <div className="notes-loading">Loading notes...</div>
+      ) : notes.length === 0 ? (
+        <div className="notes-empty">
+          <FaStickyNote className="notes-empty-icon" />
+          <p>No notes yet. Create your first note above!</p>
+        </div>
+      ) : (
+        <div className="notes-grid">
+          {notes.map((note) => (
+            <div key={note._id} className="note-card">
+              {editingId === note._id ? (
+                <div className="note-edit-mode">
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="notes-input"
+                  />
+                  <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    className="notes-textarea"
+                  />
+                  <div className="note-actions">
+                    <button onClick={() => updateNote(note._id)} className="note-save-btn">
+                      <FaCheck /> Save
+                    </button>
+                    <button onClick={cancelEditing} className="note-cancel-btn">
+                      <FaTimes /> Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="note-view-mode">
+                  <h3 className="note-title">{note.title}</h3>
+                  <p className="note-content">{note.content}</p>
+                  <div className="note-actions">
+                    <button onClick={() => startEditing(note)} className="note-edit-btn">
+                      <FaEdit /> Edit
+                    </button>
+                    <button onClick={() => deleteNote(note._id)} className="note-delete-btn">
+                      <FaTrash /> Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-/* ================= STYLES ================= */
-
-const containerStyle = {
-  padding: "40px",
-  minHeight: "100vh",
-  background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)",
-  color: "white",
-  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-};
-
-const formCardStyle = {
-  background: "linear-gradient(145deg, #1e293b, #334155)",
-  padding: "35px",
-  borderRadius: "20px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "20px",
-  maxWidth: "800px",
-  boxShadow: "0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  backdropFilter: "blur(10px)"
-};
-
-const inputStyle = {
-  padding: "16px 20px",
-  borderRadius: "12px",
-  border: "2px solid transparent",
-  background: "linear-gradient(145deg, #0f172a, #1e293b)",
-  color: "white",
-  fontSize: "16px",
-  transition: "all 0.3s ease",
-  outline: "none",
-  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.3)"
-};
-
-const textareaStyle = {
-  padding: "16px 20px",
-  borderRadius: "12px",
-  border: "2px solid transparent",
-  background: "linear-gradient(145deg, #0f172a, #1e293b)",
-  color: "white",
-  fontSize: "16px",
-  minHeight: "150px",
-  resize: "vertical",
-  transition: "all 0.3s ease",
-  outline: "none",
-  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.3)"
-};
-
-const btnStyle = {
-  padding: "16px 32px",
-  borderRadius: "14px",
-  border: "none",
-  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
-  color: "white",
-  fontWeight: "700",
-  fontSize: "16px",
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-  boxShadow: "0 4px 20px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.2)",
-  textTransform: "uppercase",
-  letterSpacing: "1px"
-};
-
-const noteCardStyle = {
-  background: "linear-gradient(145deg, #1e293b, #334155)",
-  padding: "30px",
-  borderRadius: "20px",
-  marginBottom: "25px",
-  boxShadow: "0 15px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  transition: "all 0.3s ease",
-  position: "relative",
-  overflow: "hidden"
-};
-
-const editBtn = {
-  marginTop: "15px",
-  marginRight: "12px",
-  padding: "10px 20px",
-  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-  border: "none",
-  borderRadius: "10px",
-  color: "white",
-  fontWeight: "600",
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-  boxShadow: "0 4px 15px rgba(59, 130, 246, 0.3)"
-};
-
-const deleteBtn = {
-  marginTop: "15px",
-  padding: "10px 20px",
-  background: "linear-gradient(135deg, #ef4444, #dc2626)",
-  border: "none",
-  borderRadius: "10px",
-  color: "white",
-  fontWeight: "600",
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-  boxShadow: "0 4px 15px rgba(239, 68, 68, 0.3)"
-};
-
 export default Notes;
-

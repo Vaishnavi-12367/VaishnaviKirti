@@ -17,8 +17,12 @@ function Dashboard() {
   const [healthScore, setHealthScore] = useState(85);
 
   useEffect(() => {
+    // Only fetch notes if we have a tenantId
+    // ProtectedRoute already validated auth, so we just fetch data
+    if (!tenantId) return;
+
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) return; // Don't redirect, let ProtectedRoute handle it
 
     fetch("http://localhost:5000/api/notes", {
       headers: {
