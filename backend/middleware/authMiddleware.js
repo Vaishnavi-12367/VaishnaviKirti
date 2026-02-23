@@ -16,6 +16,8 @@ const verifyToken = (req, res, next) => {
   let token = authHeader;
   if (authHeader.startsWith("Bearer ")) {
     token = authHeader.slice(7).trim();
+  }
+  
   console.log("Extracted token:", token);
   console.log("JWT Secret:", process.env.JWT_SECRET ? "SET" : "NOT SET (using default)");
   const secret = process.env.JWT_SECRET || "secretkey123";
